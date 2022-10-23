@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { nanoid } from "nanoid";
 import data from "./data/data.json";
+import ReadOnlyRow from "./components/ReadOnlyRow";
+import EditableRow from "./components/EditableRow";
 
 interface Contact {
   id: string;
@@ -11,9 +13,17 @@ interface Contact {
 }
 
 const App = () => {
+  const [editContactId, setEditContactId] = useState("");
   const [contacts, setContact] = useState(data);
   const [addFormContact, setAddFormContact] = useState<Contact>({
     id: "",
+    fullName: "",
+    address: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const [editFormData, setEditFormData] = useState({
     fullName: "",
     address: "",
     phoneNumber: "",
@@ -31,6 +41,27 @@ const App = () => {
     setAddFormContact(newFormData);
   };
 
+  const handleEditFormSubmit = (event: any) => {
+    event.preventDefault();
+
+    const editedContact = {
+      id: editContactId,
+      fullName: editFormData.fullName,
+      address: editFormData.address,
+      phoneNumber: editFormData.phoneNumber,
+      email: editFormData.email,
+    };
+
+    const newContacts = [...contacts];
+
+    const index = contacts.findIndex((contact) => contact.id === editContactId);
+
+    newContacts[index] = editedContact;
+
+    setContact(newContacts);
+    setEditContactId("");
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
 
@@ -46,28 +77,79 @@ const App = () => {
     setContact(newContacts);
   };
 
+  const handleCancelClick = () => {
+    setEditContactId("");
+  };
+
+  const handleEditFormChange = (event: any) => {
+    event.preventDefault();
+
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData: any = { ...editFormData };
+    newFormData[fieldName] = fieldValue;
+
+    setEditFormData(newFormData);
+  };
+
+  const handleEditClick = (e: any, contact: Contact) => {
+    e.preventDefault();
+    setEditContactId(contact.id);
+
+    const formValues = {
+      fullName: contact.fullName,
+      address: contact.address,
+      phoneNumber: contact.phoneNumber,
+      email: contact.email,
+    };
+
+    setEditFormData(formValues);
+  };
+
+  const handleDeleteClick = (contactId: string) => {
+    let newContacts = [...contacts];
+    newContacts = newContacts.filter((contact) => contact.id !== contactId);
+    setContact(newContacts);
+  };
+
   return (
     <div className="container">
-      <table className="table">
-        <thead>
-          <tr className="table-dark">
-            <th scope="col">Name</th>
-            <th scope="col">Address</th>
-            <th scope="col">Phone Number</th>
-            <th scope="col">Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map((contact) => (
-            <tr key={contact.id} className="table-primary">
-              <td>{contact.fullName}</td>
-              <td>{contact.address}</td>
-              <td>{contact.phoneNumber}</td>
-              <td>{contact.email}</td>
+      <form onSubmit={handleEditFormSubmit}>
+        <table className="table">
+          <thead>
+            <tr className="table-dark">
+              <th scope="col">Name</th>
+              <th scope="col">Address</th>
+              <th scope="col">Phone Number</th>
+              <th scope="col">Email</th>
+              <th scope="col">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {contacts.map((contact) => (
+              <>
+                {editContactId === contact.id ? (
+                  <EditableRow
+                    key={contact.id}
+                    editFormData={editFormData}
+                    handleEditFormChange={handleEditFormChange}
+                    handleCancelClick={handleCancelClick}
+                  />
+                ) : (
+                  <ReadOnlyRow
+                    key={contact.id}
+                    contact={contact}
+                    onEdit={handleEditClick}
+                    onDelete={handleDeleteClick}
+                  />
+                )}
+              </>
+            ))}
+          </tbody>
+        </table>
+      </form>
+
       <h2>Add a Contact</h2>
       <form onSubmit={handleSubmit}>
         <div className="d-flex justify-content-around">
@@ -103,7 +185,7 @@ const App = () => {
             className="form-control mx-2"
             onChange={(e) => handleAddFormChange(e)}
           />
-          <button type="submit" className="btn btn-primary btn-sm">
+          <button type="submit" className="btn btn-success btn-sm">
             Add
           </button>
         </div>
