@@ -3,6 +3,9 @@ import { nanoid } from "nanoid";
 import data from "./data/data.json";
 import ReadOnlyRow from "./components/ReadOnlyRow";
 import EditableRow from "./components/EditableRow";
+import Input from "./common/input";
+import Button from "./common/button";
+import TableHeader from "./common/tableHeader";
 
 interface Contact {
   id: string;
@@ -93,8 +96,7 @@ const App = () => {
     setEditFormData(newFormData);
   };
 
-  const handleEditClick = (e: any, contact: Contact) => {
-    e.preventDefault();
+  const handleEditClick = (contact: Contact) => {
     setEditContactId(contact.id);
 
     const formValues = {
@@ -117,15 +119,7 @@ const App = () => {
     <div className="container">
       <form onSubmit={handleEditFormSubmit}>
         <table className="table">
-          <thead>
-            <tr className="table-dark">
-              <th scope="col">Name</th>
-              <th scope="col">Address</th>
-              <th scope="col">Phone Number</th>
-              <th scope="col">Email</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
+          <TableHeader />
           <tbody>
             {contacts.map((contact) => (
               <>
@@ -153,41 +147,31 @@ const App = () => {
       <h2>Add a Contact</h2>
       <form onSubmit={handleSubmit}>
         <div className="d-flex justify-content-around">
-          <input
-            required
-            type="text"
+          <Input
             name="fullName"
-            placeholder="Enter FullName"
-            className="form-control mx-2"
-            onChange={(e) => handleAddFormChange(e)}
+            placeholder="Enter Full Name"
+            onChange={(e: Event) => handleAddFormChange(e)}
           />
-          <input
-            required
-            type="text"
+          <Input
             name="address"
             placeholder="Enter Address"
-            className="form-control mx-2"
-            onChange={(e) => handleAddFormChange(e)}
+            onChange={(e: Event) => handleAddFormChange(e)}
           />
-          <input
-            required
-            type="text"
+          <Input
             name="phoneNumber"
-            className="form-control mx-2"
             placeholder="Enter Phone Number"
-            onChange={(e) => handleAddFormChange(e)}
+            onChange={(e: Event) => handleAddFormChange(e)}
           />
-          <input
-            required
-            type="text"
+          <Input
             name="email"
             placeholder="Enter Email"
-            className="form-control mx-2"
-            onChange={(e) => handleAddFormChange(e)}
+            onChange={(e: Event) => handleAddFormChange(e)}
           />
-          <button type="submit" className="btn btn-success btn-sm">
-            Add
-          </button>
+          <Button
+            type="submit"
+            className="btn btn-success btn-sm"
+            lable="Add"
+          />
         </div>
       </form>
     </div>

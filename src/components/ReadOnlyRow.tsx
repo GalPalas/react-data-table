@@ -1,3 +1,5 @@
+import Button from "../common/button";
+
 const ReadOnlyRow = ({ contact, onEdit, onDelete }: any) => {
   const { id, fullName, address, phoneNumber, email } = contact;
   return (
@@ -7,18 +9,17 @@ const ReadOnlyRow = ({ contact, onEdit, onDelete }: any) => {
       <td>{phoneNumber}</td>
       <td>{email}</td>
       <td>
-        <button
+        <Button
           className="btn btn-primary btn-sm"
-          onClick={(e) => onEdit(e, contact)}
-        >
-          Edit
-        </button>
-        <button
+          onClick={() => onEdit(contact)}
+          lable="Edit"
+        />
+
+        <Button
           className="btn btn-danger btn-sm mx-2"
           onClick={() => onDelete(contact.id)}
-        >
-          Delete
-        </button>
+          lable="Delete"
+        />
       </td>
     </tr>
   );
